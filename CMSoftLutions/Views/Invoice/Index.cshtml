@@ -1,15 +1,75 @@
-﻿
+﻿@model Model.Invoice
+
 @{
     ViewBag.Title = "Index";
 }
 <br />
-<div class="container">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <i class="fa fa-file-text fa-fw"></i>
-            Nueva Factura
-        </div>
-        <div class="panel-body">
-        </div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <i class="fa fa-file-text fa-fw"></i>
+        Nueva Factura
+    </div>
+    <div class="panel-body">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <div class="form-group">                   
+                    <div class="col-md-offset-1 col-md-10">
+                        @Html.LabelFor(model => model.CustomerName, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.CustomerName, new { htmlAttributes = new { @type = "text", @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.CustomerName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                
+                <div class="form-group">                    
+                    <div class="col-md-offset-1 col-md-5">
+                        @Html.LabelFor(model => model.InvoiceNumber, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.InvoiceNumber, new { htmlAttributes = new { @type = "number", @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.InvoiceNumber, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-5">
+                        @Html.LabelFor(model => model.InvoiceDate, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.InvoiceDate, new { htmlAttributes = new { @type = "date", @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.InvoiceDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>             
+
+                
+
+                <div class="form-group">                    
+                    <div class="col-md-offset-1 col-md-5">
+                        @Html.LabelFor(model => model.TotalValue, htmlAttributes: new { @class = "control-label col-md-2" })
+                        @Html.EditorFor(model => model.TotalValue, new { htmlAttributes = new { @type = "number", @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.TotalValue, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-1 col-md-10">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Agregar Producto</button>
+
+
+                        <!-- Modal -->
+                        @Html.Partial("~/Views/Shared/_InvoiceDetail.cshtml")
+
+                        <hr />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-1 col-md-10">
+                        <div class="text-right">
+                            <button id="save" type="submit" data-ajax="true" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        }
     </div>
 </div>
+
