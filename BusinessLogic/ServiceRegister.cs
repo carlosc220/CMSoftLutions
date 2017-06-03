@@ -1,4 +1,7 @@
 ﻿#region Using
+using BusinessLogic.CustomerBusinessLogic;
+using BusinessLogic.InvoiceBusinessLogic;
+using BusinessLogic.ProductBusinessLogic;
 using LightInject;
 using Model;
 using Persistence.DbContextScope;
@@ -16,13 +19,16 @@ namespace BusinessLogic
 
             #region Repositorios
             container.Register<IDbContextScopeFactory>((x) => new DbContextScopeFactory(null));
-            //container.Register<IRepository<City>>((x) => new Repository<City>(ambientDbContextLocator));
-            
+            container.Register<IRepository<Customer>>((x) => new Repository<Customer>(ambientDbContextLocator));
+            container.Register<IRepository<Product>>((x) => new Repository<Product>(ambientDbContextLocator));
+            container.Register<IRepository<Invoice>>((x) => new Repository<Invoice>(ambientDbContextLocator));
+            container.Register<IRepository<InvoiceDetail>>((x) => new Repository<InvoiceDetail>(ambientDbContextLocator));
             #endregion
 
             #region Logica de Aplicacion
-            //container.Register<IThirdPartyLogic, ThirdPartyLogic>();
-            
+            container.Register<IProductLogic, ProductLogic>();
+            container.Register<IInvoiceLogic, InvoiceLogic>();
+            container.Register<ICustomerLogic, CustomerLogic>();
             #endregion
         }
     }

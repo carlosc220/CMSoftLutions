@@ -2,6 +2,7 @@ namespace Model
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
@@ -19,13 +20,21 @@ namespace Model
 
         [Required]
         [StringLength(50)]
+        [DisplayName("Nº de factura")]
         public string InvoiceNumber { get; set; }
 
+        [DisplayName("Fecha")]
         public DateTime InvoiceDate { get; set; }
 
         public int CustomerId { get; set; }
 
+        [NotMapped]
+        [DisplayName("Cliente")]
+        [Required]
+        public string CustomerName { get; set; }
+
         [Column(TypeName = "numeric")]
+        [DisplayName("Valor Total")]
         public decimal TotalValue { get; set; }
 
         public virtual Customer Customer { get; set; }

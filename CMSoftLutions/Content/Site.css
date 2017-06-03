@@ -26,15 +26,17 @@ form {
 
 input[type="text"],
 input[type="password"],
+input[type="number"],
+input[type="date"],
 textarea,
 textarea.form-control {
     height: 35px;
     margin: 0;
     padding: 0 20px;
     vertical-align: middle;
-    border: 3px solid #ddd;
-    font-size: 18px;
-    font-weight: 300;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    font-weight: 100;
     line-height: 50px;
     color: #888;
     -moz-border-radius: 4px;
@@ -48,4 +50,14 @@ textarea.form-control {
     -webkit-transition: all .3s;
     -ms-transition: all .3s;
     transition: all .3s;
+}
+
+
+#deleteDetail {
+    padding-top: 2px;
+    cursor: pointer;
+}
+
+#tdHide {
+    display: none;
 }

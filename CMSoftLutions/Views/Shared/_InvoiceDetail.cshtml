@@ -1,45 +1,75 @@
 ﻿@model  Model.InvoiceDetail
 
-<div id="myModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
+<hr />
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <i class="fa fa-file-text fa-fw"></i>
+        Agregar Detalle
+    </div>
+    <div class="panel-body">
+        <form action="#" method="post">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <div class="col-md-offset-1 col-md-5">
 
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Agregar Producto</h4>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.ProductId, htmlAttributes: new { @class = "control-label" })
-                            @Html.EditorFor(model => model.ProductId, new { htmlAttributes = new { @class = "form-control" } })
-                            @Html.ValidationMessageFor(model => model.ProductId, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.ProductId)
+                        @Html.LabelFor(model => model.ProductName)
+                        @Html.EditorFor(model => model.ProductName, new { htmlAttributes = new { @type = "text", @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.ProductName, "", new { @class = "text-danger" })
 
+
+                    </div>
+                    <div class="col-md-5">
+
+                        @Html.LabelFor(model => model.QuantityString)
+                        @Html.EditorFor(model => model.QuantityString, new { htmlAttributes = new { @type = "number", @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.QuantityString, "", new { @class = "text-danger" })
+
+                    </div>
+
+                    @Html.HiddenFor(model => model.Value)
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-1 col-md-10">
+                        <div class="text-right">
+                            <button id="add" type="button" class="btn btn-primary">Agregar Producto</button>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label" })
-                            @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control" } })
-                            @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Value, htmlAttributes: new { @class = "control-label col-md-2" })
-                            @Html.EditorFor(model => model.Value, new { htmlAttributes = new { @class = "form-control" } })
-                            @Html.ValidationMessageFor(model => model.Value, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-                </div>                
+                </div>
             </div>
-            <div class="modal-footer">
-                <button id="add" type="button" class="btn btn-primary">Agregar</button>
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
+        </form>
 
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+
+        $("#ProductName").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Content("~/Product/ListProducts/")',
+                    type: "POST",
+                    dataType: "json",
+                    data: { Search: request.term },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            console.log(item);
+                            return { id: item.Id, unitValue: item.UnitValue, label: item.Code + ' - ' + item.Name, value: item.Code + ' - ' + item.Name };
+                        }))
+
+                    }
+                })
+            },
+            messages: {
+                noResults: "", results: ""
+            },
+            select: function (event, ui) {
+                console.log(ui);
+                $("#ProductId").val(ui.item.id);
+                $("#Value").val(ui.item.unitValue);
+            }
+        });
+        $("#ProductName").autocomplete("option", "appendTo", ".eventInsForm");
+    })
+</script>

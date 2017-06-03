@@ -10,22 +10,23 @@
         Nueva Factura
     </div>
     <div class="panel-body">
-        @using (Html.BeginForm())
+        @using (Html.BeginForm("SaveInvoce", "Invoice", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
 
             <div class="form-horizontal">
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-                <div class="form-group">                   
+                <div class="form-group">
                     <div class="col-md-offset-1 col-md-10">
+                        @Html.HiddenFor(model => model.CustomerId)
                         @Html.LabelFor(model => model.CustomerName, htmlAttributes: new { @class = "control-label" })
                         @Html.EditorFor(model => model.CustomerName, new { htmlAttributes = new { @type = "text", @class = "form-control" } })
                         @Html.ValidationMessageFor(model => model.CustomerName, "", new { @class = "text-danger" })
                     </div>
                 </div>
-                
-                <div class="form-group">                    
+
+                <div class="form-group">
                     <div class="col-md-offset-1 col-md-5">
                         @Html.LabelFor(model => model.InvoiceNumber, htmlAttributes: new { @class = "control-label" })
                         @Html.EditorFor(model => model.InvoiceNumber, new { htmlAttributes = new { @type = "number", @class = "form-control" } })
@@ -36,25 +37,26 @@
                         @Html.EditorFor(model => model.InvoiceDate, new { htmlAttributes = new { @type = "date", @class = "form-control" } })
                         @Html.ValidationMessageFor(model => model.InvoiceDate, "", new { @class = "text-danger" })
                     </div>
-                </div>             
+                </div>
 
-                
 
-                <div class="form-group">                    
+
+                <div class="form-group">
                     <div class="col-md-offset-1 col-md-5">
-                        @Html.LabelFor(model => model.TotalValue, htmlAttributes: new { @class = "control-label col-md-2" })
-                        @Html.EditorFor(model => model.TotalValue, new { htmlAttributes = new { @type = "number", @class = "form-control" } })
+                        @Html.LabelFor(model => model.TotalValue, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.TotalValue, new { htmlAttributes = new { @type = "number", @readonly = true, @class = "form-control" } })
                         @Html.ValidationMessageFor(model => model.TotalValue, "", new { @class = "text-danger" })
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div class="col-md-offset-1 col-md-10">
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Agregar Producto</button>
-
-
                         <!-- Modal -->
                         @Html.Partial("~/Views/Shared/_InvoiceDetail.cshtml")
+
+                        <div id="orderItems">
+
+                        </div>
 
                         <hr />
                     </div>
@@ -67,9 +69,115 @@
                         </div>
                     </div>
                 </div>
-                
+
             </div>
         }
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+
+        $("#TotalValue").val(0);
+        $('#ProductId').val(0);
+        $('#ProductName').val('');
+        $('#QuantityString,#Value').val(0);
+
+        $("#CustomerName").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Content("~/Customer/ListCustomers/")',
+                    type: "POST",
+                    dataType: "json",
+                    data: { Search: request.term },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            console.log(item);
+                            return { id: item.Id, label: item.Identification + ' - ' + item.Name + ' ' + item.LastName, value: item.Identification + ' - ' + item.Name + ' ' + item.LastName };
+                        }))
+
+                    }
+                })
+            },
+            messages: {
+                noResults: "", results: ""
+            },
+            select: function (event, ui) {
+                $("#CustomerId").val(ui.item.id);
+            }
+        });
+
+        /*Agregar Producto*/
+        var InvoiceDetail = [];
+        $('#add').click(function () {
+
+            if ($('#ProductId').val() == 0 || $('#QuantityString').val() == 0) {
+                return;
+            }
+
+            InvoiceDetail.push({
+                ProductId: parseInt($('#ProductId').val().trim()),
+                ProductName: $('#ProductName').val().trim(),
+                Quantity: $('#QuantityString').val().trim(),
+                Value: parseFloat($('#Value').val().trim() * $('#QuantityString').val().trim()),
+
+            });
+
+            
+
+           
+
+           
+
+            GeneratedItemsTable();
+
+            //Clear fields
+            $('#ProductId').val(0).focus();
+            $('#ProductName').val('');
+            $('#QuantityString,#Value').val(0);
+        });
+
+        function GeneratedItemsTable() {
+            $('#orderItems').html('');
+            var table = $('<table></table>').addClass('table table-bordered table-striped');
+            var header = $('<thead><tr><th>Producto</th><th>Cantidad</th><th>Valor</th></tr></thead>');
+            table.append(header);
+
+            if (InvoiceDetail.length > 0) {
+                var totalValue = 0;
+                $.each(InvoiceDetail, function (i, val) {
+
+                    totalValue += val.Value;
+
+                    var row = $('<tr></tr>');
+                    var colum = $('<td id="tdHide"></td>').append('<input class="form-control" value="' + val.ProductId + '" name="InvoiceDetail[' + i + '].ProductId" data-val="true">')
+                    row.append(colum)
+                    var colum = $('<td></td>').append('<input readonly class="form-control" value="' + val.ProductName + '"  data-val="False">')
+                    row.append(colum)
+                    var colum = $('<td></td>').append('<input readonly class="form-control" value="' + val.Quantity + '" name="InvoiceDetail[' + i + '].QuantityString" data-val="true">')
+                    row.append(colum)
+                    var colum = $('<td></td>').append('<input readonly class="form-control" value="' + val.Value + '" name="InvoiceDetail[' + i + '].Value" data-val="true">')
+                    row.append(colum)
+                    var $remove = $('<i id="deleteDetail" class="fa fa-trash fa-2x"></i><a  href="#" btn btn-success btn-xs btn-block btn-eliminar></a>');
+                    $remove.click(function (e) {
+                        e.preventDefault();
+                        InvoiceDetail.splice(i, 1);
+                        GeneratedItemsTable();
+                    });
+                    var colum = $('<td></td>').append($remove);
+                    row.append(colum)
+
+
+                    table.append(row);
+                });
+                $("#TotalValue").val(totalValue);
+
+                $('#orderItems').append(table);
+            }
+            /*Fin agregar producto*/
+
+        }
+
+    })
+</script>
 

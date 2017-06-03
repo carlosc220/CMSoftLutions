@@ -60,6 +60,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomerBusinessLogic\CustomerLogic.cs" />
+    <Compile Include="CustomerBusinessLogic\ICustomerLogic.cs" />
+    <Compile Include="InvoiceBusinessLogic\IInvoiceLogic.cs" />
+    <Compile Include="InvoiceBusinessLogic\InvoiceLogic.cs" />
+    <Compile Include="ProductBusinessLogic\IProductLogic.cs" />
+    <Compile Include="ProductBusinessLogic\ProductLogic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceRegister.cs" />
   </ItemGroup>
